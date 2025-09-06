@@ -1,0 +1,43 @@
+CHANGE LOG ENTRY 1 9/6/25
+Creation & sizing
+Add boards at runtime: add_board_mm(L, W, T) drops at mouse ground, honors snap.
+Duplication: duplicate_active() with smart drop (mouse if over yard, else +X offset).
+Resize hotkeys (with Shift):
+Width: Shift+←/→
+Length: Shift+↑/↓
+Thickness: Shift+PgUp/PgDn
+Remember last size: last_spawn_size_mm updates after add/resize.
+Selection, alignment, snapping
+Two-board face alignment (F): _align_pair_on_face() aligns B to A on hovered face.
+Hover face overlay: translucent Quad on face under cursor.
+Lift step adjust: [/] adjusts lift step; E/Q (or PgUp/PgDn) lifts active.
+
+Input cleanup
+Consolidated _unhandled_input:
+Single path for mouse select, motion-drag update, and key handling.
+Removed duplicate match blocks that caused earlier parse errors.
+
+IDs, import, persistence
+Deterministic IDs: _next_part_id() + _reset_part_ids() used on render/import.
+Cutlist render: stable instance names, optional source label preserved.
+Save/Load: ProjectIO.save_project / load_project round-trip instances + features.
+
+Blueprint export
+Cameras: _ensure_blueprint_cameras() creates CamTop/CamFront/CamSide (orthographic).
+Framing: _compute_scene_aabb() + _frame_blueprint_cameras() (Godot 4 AABB.expand()).
+PNG export: _export_blueprints() (V) captures each camera to PNG.
+GLB export
+
+Scene packaging: ProjectIO.export_glb_to(path) duplicates boards under WoodshopExport and writes GLTF.
+HUD / UX
+HUD base string fixed (no stray base variable): now hud_base.
+Units flip: M toggles mm↔in display formatting.
+Type-safety & parse fixes
+
+Replaced := with explicit types where warnings were promoted to errors (e.g., _resize_active, alignment dictionaries).
+Fixed AABB.expand_to → aabb = aabb.expand(point) (Godot 4).
+Removed stray class-body lines that referenced hud_label (moved back inside functions).
+
+Utilities
+_opposite_face, _ground_point_at_mouse, _raycast solidified.
+_reset_active_board() helper to rebuild CSG of active board when needed.
