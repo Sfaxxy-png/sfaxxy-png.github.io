@@ -41,3 +41,53 @@ Removed stray class-body lines that referenced hud_label (moved back inside func
 Utilities
 _opposite_face, _ground_point_at_mouse, _raycast solidified.
 _reset_active_board() helper to rebuild CSG of active board when needed.
+
+
+
+
+9/6/25 Changelog — session recap
+Removed
+scripts/Exporter.gd
+Duplicated GLB export covered by ProjectIO.export_glb_to().
+scripts/JoineryMiniDialog.gd
+Legacy/unused popup; no references in current flow.
+
+Updated
+scripts/CutlistImporter.gd
+Deleted stray _col() helper that referenced out-of-scope idx/cols (parser error).
+Kept _csv_col() as the single accessor.
+No behavioral change to JSON/CSV parsing.
+scripts/Main.gd
+Removed unused line: @onready var exporter: Exporter = $"../export/Exporter".
+(Note: you still can switch Basis().looking_at(...) → Basis.looking_at(...) later to silence warnings—optional.)
+
+scripts/config.gd + Autoload
+Resolved autoload name collision:
+Kept autoload name Config and removed/renamed class_name in config.gd OR
+Kept class_name Config and changed autoload name (e.g., CFG) and updated references.
+Outcome: onboarding.gd can call Config.show_onboarding and Config.save_cfg() as instance methods.
+
+ui/onboarding.gd
+Crash fix: the %NodeName lookups failed (nodes weren’t unique). Two viable changes were applied (you picked one):
+A. Marked nodes (BtnNext, BtnClose, ChkDontShow, Page1–3) as Unique Name in Scene, keeping % lookups, or
+
+B. Rewrote script to defensively fetch nodes (works with/without %, won’t crash if missing) and gracefully hides onboarding if incomplete.
+End result: no more startup crash after Start.
+ui/MainMenu.gd
+Fixed scene switching by replacing guessy paths with a hardwired MAIN_SCENE_PATH (or an auto-finder), plus:
+Explicit signal connections in _ready() (so it works even if not wired in the editor).
+Input safety: ensures the button is enabled and receives clicks.
+Debug helpers: filesystem listing, loud errors.
+Tabs-only indentation (fixed mixed tabs/spaces warnings).
+
+Behavioral fixes achieved
+Game boots to Main Menu, the Start button successfully transitions to your Main scene.
+Onboarding no longer crashes the scene if its nodes aren’t found.
+Autoload Config now works without class-name collision.
+Project runs clean of the earlier parse errors; joinery/boards render again.
+
+Known/visible issues (UI polish)
+TopBar overlaps the inline help text (see screenshot). Quick remedies:
+Put help text in its own Label anchored Top-Left with margins (e.g., CanvasLayer/UI/HelpLabel) and set TopBar inside a PanelContainer with padding so it’s visually distinct.
+Ensure TopBar has Mouse → Filter = Stop and help text Mouse → Filter = Ignore, so clicks hit buttons reliably.
+If using two separate containers, set TopBar’s z_index a notch higher than the help background but keep layout margins to avoid text overlap.
