@@ -91,3 +91,49 @@ TopBar overlaps the inline help text (see screenshot). Quick remedies:
 Put help text in its own Label anchored Top-Left with margins (e.g., CanvasLayer/UI/HelpLabel) and set TopBar inside a PanelContainer with padding so it’s visually distinct.
 Ensure TopBar has Mouse → Filter = Stop and help text Mouse → Filter = Ignore, so clicks hit buttons reliably.
 If using two separate containers, set TopBar’s z_index a notch higher than the help background but keep layout margins to avoid text overlap.
+
+CHANGELOG 9/8/25
+UI Overhaul
+
+Removed legacy Panel/VBox UI scaffold.
+Built new UI structure:
+TopBar (styled with TopBar.gd, Phtshp-style dark theme).
+HSplit → LeftDock + VSplit → CenterStack + RightDock.
+Row inside TopBar for button layout.
+Added button styling (hover/pressed/disabled/focus states).
+Snap checkbox integrated cleanly into TopBar.
+Joinery menu wired dynamically (BtnJoinery + JoineryMenu).
+
+🛠 Main.gd Refactor
+
+Cleaned _wire_topbar_auto() — now automatically finds and wires buttons by name.
+Added _call_first() method → allows flexible calling of action handlers across Main, JoineryManager, ProjectIO, etc.
+Fixed duplicated / redundant joinery.init() calls.
+Added _fix_ui_layout() to enforce anchors and responsive sizing.
+Restored _lift_active() function (Z-axis moves with Q/E/PageUp/PageDown).
+Tightened _unhandled_input() to respect UI focus.
+
+JoineryManager
+
+Fixed variable type inference warnings (typed floats, ints, Boards).
+Cleaned init() to avoid bool→Button type errors.
+Ensured Joinery popup (PopupMenu) is created dynamically if missing.
+Re-typed ids (Array of ints) to fix runtime crashes.
+Mortise and Pair M+T now selectable via UI or hotkeys.
+
+Camera System
+Added OrbitCamera.gd (custom script).
+Fixed ternary operator parse errors → replaced with proper if/else.
+
+Implemented:
+RMB drag → orbit.
+MMB drag → pan.
+Mouse wheel → zoom.
+Camera is now functional and responsive.
+
+Core Features Restored
+Boards now spawn/render from cutlist JSON (via Render button).
+Boards can be duplicated, added, or aligned.
+Export works:
+GLB models → user://exports.
+Blueprint PNGs (top/front/side orthographic).
